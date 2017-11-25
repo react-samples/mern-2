@@ -35,6 +35,13 @@ mongoose.connect('mongodb://localhost:27017/chatapp',function(err){
   }
 })
 
+function checkAuth(req, res, next) {
+  if(req.isAuthenticated()){
+    return next()
+  }else{
+    return res.redirect('/oauth/twitter')
+  }
+}
 
 app.use(bodyparser())
 app.use(session({
@@ -68,6 +75,12 @@ app.get("/",function(req, res, next) {
     });
   })
 });
+
+app.get("/logout", function(req, res, next) {
+  req.logout();
+  delete req.session.user
+  return res.redirect("/");
+})
 
 passport.use(new TwitterStrategy(twitterConfig,
   function(token, tokenSecret, profile, done){
@@ -123,7 +136,7 @@ app.get("/update", csrfProtection, function(req, res, next) {
   });
 });
 
-app.post("/update", fileUpload(), csrfProtection, function(req, res, next) {
+app.post("/update", checkAuth, fileUpload(), csrfProtection, function(req, res, next) {
   if(req.files && req.files.image){
     var img = req.files.image
 
