@@ -124,6 +124,7 @@ app.post("/update", fileUpload(), function(req, res, next) {
 
       var newMessage = new Message({
         username: req.body.username,
+        avatar_path: req.session.user.avatar_path,
         message: req.body.message,
         image_path: '/image/' + img.name
       })
@@ -135,6 +136,7 @@ app.post("/update", fileUpload(), function(req, res, next) {
   }else{
       var newMessage = new Message({
         username: req.body.username,
+        avatar_path: req.session.user.avatar_path,
         message: req.body.message,
       })
       newMessage.save((err)=>{
