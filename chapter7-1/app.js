@@ -47,7 +47,7 @@ app.get("/",function(req, res, next) {
   Message.find({}, function(err, msgs){
     if(err) throw err;
     return res.render('index', {
-      messages: msgs, 
+      messages: msgs,
       user: req.session && req.session.user ? req.session.user : null
     });
   })
@@ -83,7 +83,7 @@ passport.use(new TwitterStrategy(twitterConfig,
 ));
 app.get('/oauth/twitter', passport.authenticate('twitter'));
 
-app.get('/oauth/twitter/callback', passport.authenticate('twitter'), 
+app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   function(req, res, next) {
 
     User.findOne({_id: req.session.passport.user}, function(err, user){
@@ -113,31 +113,36 @@ app.get("/update", function(req, res, next) {
 });
 
 app.post("/update", fileUpload(),function(req, res, next) {
+  if(req.files && req.files.image){
+    var img = req.files.image
 
-  var img = req.files.image
-  img.mv('./image/' + img.name, function(err){
-    if(err) throw err
-    var newMessage = new Message({
-      username: req.body.username,
-      message: req.body.message,
-      image_path: '/image/' + img.name
-    })
-    newMessage.save((err)=>{
+    img.mv('./image/' + img.name, function(err){
       if(err) throw err
-      return res.redirect("/")
-    })
-  })
-})
 
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  return res.send({
-    message: err.message,
-    error: {}
-  });
-});
+      var newMessage = new Message({
+        username: req.session.user.username,
+        avatar_path: req.session.user.avatar_path,
+        message: req.body.message,
+        image_path: '/image/' + img.name
+      })
+      newMessage.save((err)=>{
+        if(err) throw err
+        return res.json({message: newMessage, csrf: req.csrfToken()})
+      })
+    })
+  }else{
+      var newMessage = new Message({
+        username: req.session.user.username,
+        avatar_path: req.session.user.avatar_path,
+        message: req.body.message,
+      })
+      newMessage.save((err)=>{
+        if(err) throw err
+        return res.redirect("/")
+      })
+  }
+})
 
 
 const server = http.createServer(app);
 server.listen('3000');
-

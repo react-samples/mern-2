@@ -102,13 +102,11 @@ app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   }
 );
 passport.serializeUser(function(user, done) {
-  console.log("serialized: " + user)
   done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
   User.findOne({_id: id}, function(err, user) {
-    console.log("deserialized: " + id)
     done(err, user);
   });
 });
@@ -118,7 +116,7 @@ app.get("/update", function(req, res, next) {
 });
 
 app.post("/update", fileUpload(), function(req, res, next) {
-  if(req.files){
+  if(req.files && req.files.image){
     var img = req.files.image
 
     img.mv('./image/' + img.name, function(err){
@@ -126,17 +124,19 @@ app.post("/update", fileUpload(), function(req, res, next) {
 
       var newMessage = new Message({
         username: req.body.username,
+        avatar_path: req.session.user.avatar_path,
         message: req.body.message,
         image_path: '/image/' + img.name
       })
       newMessage.save((err)=>{
         if(err) throw err
-        return res.json({message: newMessage, csrf: req.csrfToken()})
+        return res.redirect("/")
       })
     })
   }else{
       var newMessage = new Message({
         username: req.body.username,
+        avatar_path: req.session.user.avatar_path,
         message: req.body.message,
       })
       newMessage.save((err)=>{

@@ -49,6 +49,7 @@ app.use(session({
   }),
 
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -133,13 +134,11 @@ app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   }
 );
 passport.serializeUser(function(user, done) {
-  console.log("serialized: " + user)
   done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
   User.findOne({_id: id}, function(err, user) {
-    console.log("deserialized: " + id)
     done(err, user);
   });
 });
@@ -154,28 +153,29 @@ app.post("/update", fileUpload(), csrfProtection, function(req, res, next) {
     var img = req.files[0].image
     img.mv('./image/' + img.name, function(err){
       if(err) throw err
-
       var newMessage = new Message({
         username: req.session.user.username,
         avatar_path: req.session.user.avatar_path,
         message: req.body.message,
         image_path: '/image/' + img.name
       })
+
       newMessage.save((err)=>{
         if(err) throw err
         return res.json({message: newMessage})
       })
     })
   }else{
-      var newMessage = new Message({
-        username: req.session.user.username,
-        avatar_path: req.session.user.avatar_path,
-        message: req.body.message,
-      })
-      newMessage.save((err)=>{
-        if(err) throw err
-        return res.redirect("/")
-      })
+
+    var newMessage = new Message({
+      username: req.session.user.username,
+      avatar_path: req.session.user.avatar_path,
+      message: req.body.message,
+    })
+    newMessage.save((err)=>{
+      if(err) throw err
+      return res.redirect("/")
+    })
   }
 })
 

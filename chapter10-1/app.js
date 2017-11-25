@@ -11,7 +11,7 @@ var MongoStore = require('connect-mongo')(session);
 var bodyparser = require('body-parser');
 var mongoose = require('mongoose');
 var fileUpload = require('express-fileupload');
-
+var moment = require('moment-timezone');
 var Message = require('./schema/Message');
 var User = require('./schema/User');
 
@@ -24,6 +24,8 @@ var twitterConfig = {
   consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
   callbackURL: process.env.TWITTER_CALLBACK_URL,
 };
+
+moment.tz.setDefault("Asia/Tokyo");
 
 mongoose.connect('mongodb://localhost:27017/chatapp',function(err){
   if(err){
@@ -43,14 +45,15 @@ app.use(session({
     mongooseConnection: mongoose.connection,
     db: 'session',
     ttl: 14 * 24 * 60 * 60,
-  }),
+  })
+}))
 
-}));
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/image", express.static(path.join(__dirname, 'image')))
 app.use("/avatar", express.static(path.join(__dirname, 'avatar')))
+app.use("/css", express.static(path.join(__dirname, 'css')))
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -60,7 +63,8 @@ app.get("/",function(req, res, next) {
     if(err) throw err;
     return res.render('index', {
       messages: msgs,
-      user: req.session && req.session.user ? req.session.user : null
+      user: req.session && req.session.user ? req.session.user : null,
+      moment: moment
     });
   })
 });
@@ -103,23 +107,24 @@ app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   }
 );
 passport.serializeUser(function(user, done) {
-  console.log("serialized: " + user)
   done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
   User.findOne({_id: id}, function(err, user) {
-    console.log("deserialized: " + id)
     done(err, user);
   });
 });
 
 app.get("/update", csrfProtection, function(req, res, next) {
-  return res.render('update',{csrf: req.csrfToken()});
+  return res.render('update', {
+    user: req.session && req.session.user ? req.session.user : null,
+    csrf: req.csrfToken()
+  });
 });
 
 app.post("/update", fileUpload(), csrfProtection, function(req, res, next) {
-  if(req.files){
+  if(req.files && req.files.image){
     var img = req.files.image
 
     img.mv('./image/' + img.name, function(err){
@@ -127,8 +132,9 @@ app.post("/update", fileUpload(), csrfProtection, function(req, res, next) {
 
       var newMessage = new Message({
         username: req.body.username,
+        avatar_path: req.session.user.avatar_path,
         message: req.body.message,
-        image_path: '/image/' + img.name
+        image_path: '/image/' + img.name,
       })
       newMessage.save((err)=>{
         if(err) throw err
@@ -138,6 +144,7 @@ app.post("/update", fileUpload(), csrfProtection, function(req, res, next) {
   }else{
       var newMessage = new Message({
         username: req.body.username,
+        avatar_path: req.session.user.avatar_path,
         message: req.body.message,
       })
       newMessage.save((err)=>{
