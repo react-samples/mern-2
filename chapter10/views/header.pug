@@ -1,4 +1,7 @@
 nav(id="header")
+  div(class="update_link")
+    a(href="/update")
+      span(class="nav_item") 投稿する
   if user
     img(src=user.avatar_path class="avatar")
     a(href="/logout")
