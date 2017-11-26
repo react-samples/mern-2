@@ -110,7 +110,7 @@ app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   function(req, res, next) {
 
     User.findOne({_id: req.session.passport.user}, function(err, user){
-      if(err||!req.session) return res.redirect('/login')
+      if(err||!req.session) return res.redirect('/oauth/twitter')
       req.session.user = {
         username: user.username,
         avatar_path: user.avatar_path
