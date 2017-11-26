@@ -182,7 +182,6 @@ app.use(function(err, req, res, next) {
   }else{
     res.status(err.status || 500);
   }
-  res.status(err.status || 500);
   return res.render('error', {
     message: err.message,
     status: err.status || 500
