@@ -1,0 +1,11 @@
+nav(id="header")
+  div(class="update_link")
+    a(href="/update")
+      span(class="nav_item") 投稿する
+  if user
+    img(src=user.avatar_path class="avatar")
+    a(href="/logout")
+      span(class="nav_item") #{user.username}
+  else
+    a(href="/oauth/twitter")
+      span(class="nav_item") ログイン

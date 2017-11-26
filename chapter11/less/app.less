@@ -1,0 +1,108 @@
+@color: #333;
+@headerColor: #fff;
+@headerBgColor: #C92229;
+@marginLeft: 64px;
+@headerHeight: 64px;
+
+body {
+  background-color: #f6f6f6;
+}
+
+a {
+  text-decoration: none
+}
+
+#header{
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:@headerHeight; 
+  line-height: @headerHeight;
+  background-color: @headerBgColor;
+  box-shadow: 0 1px 0 rgba(12, 13, 14, 0.15), 0 0 0;
+}
+#main{
+  max-width:840px;
+  margin: 0 auto;
+  margin-top:(@headerHeight + 16px);
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 0 1px 0 rgba(12, 13, 14, 0.15), 0 0 0;
+}
+#title {
+  font-size: 20px;
+}
+.nav_item{
+  display: inline;
+  vertical-align: middle;
+  line-height: inherit;
+  color: @headerColor;
+}
+.update_link{
+  float:right;
+}
+.avatar{
+  vertical-align:middle;
+  margin: (@headerHeight / 8);
+  width: (@headerHeight / 1.5);
+  height: (@headerHeight / 1.5);
+  display: inline-block;
+}
+.msg {
+  position:relative;
+  border-top:1px solid #f9f9f9;
+}
+.msg_meta{
+  margin-left: @marginLeft;
+}
+.msg_username{
+  display: inline;
+  font-size:16px;
+  color: @color;
+}
+.msg_date{
+  font-size: 12px;
+  color: #ababab;
+}
+.msg_main{
+  margin-left: @marginLeft;
+}
+.msg_body{
+  font-size:12px;
+  color: @color;
+}
+.msg_avatar{
+  position: absolute;
+  left: (@marginLeft / 8);
+  top: 8px;
+  width: (@marginLeft / 1.5);
+  height: (@marginLeft / 1.5);    
+}
+.msg_image{
+  max-width: 256px;
+  margin: 0 auto;
+}
+
+#textarea-message{
+  width:88%;
+  margin: 0 auto;
+  padding:4px;
+  border:none;
+  border-radius:4px;
+  background: #f5f5f5;
+  min-height:196px;
+  resize:none;
+}
+#input-file{
+  display:inline;   
+}
+#submit-button{
+  display:inline;
+  border-radius:4px;
+  border:none;
+  padding: 4px 16px;
+  background-color: @headerBgColor;
+  color: #fff;
+}
+
