@@ -1,0 +1,19 @@
+doctype html
+html(lang="ja")
+  head
+    meta(charset="utf-8")
+    link(href="/css/app.css" rel="stylesheet" type="text/css")
+  body
+    include header.pug
+    section(id="main")
+      h1(id="title") 投稿一覧
+      each msg in messages
+        div(class="msg")
+          div(class="msg_meta")
+            h2(class="msg_username") #{msg.username}
+            time(class="msg_date") #{moment(msg.date).format('YYYY-MM-DD HH:mm:ss')}
+          div(class="msg_main")
+            p(class="msg_body") #{msg.message}
+          img(src=msg.avatar_path class="msg_avatar")
+        if msg.image_path
+          img(src=msg.image_path class="msg_image")
