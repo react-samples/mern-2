@@ -128,7 +128,7 @@ app.post("/update", fileUpload(), function(req, res, next) {
         message: req.body.message,
         image_path: '/image/' + img.name
       })
-      newMessage.save((err)=>{
+      newMessage.save(function(err) {
         if(err) throw err
         return res.redirect("/")
       })
