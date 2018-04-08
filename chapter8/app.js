@@ -24,7 +24,7 @@ var twitterConfig = {
   callbackURL: process.env.TWITTER_CALLBACK_URL,
 };
 
-mongoose.connect('mongodb://localhost:27017/chatapp',function(err){
+mongoose.connect('mongodb://localhost:27017/chatapp',function(err) {
   if(err){
      console.error(err);
   }else{
@@ -66,7 +66,7 @@ app.get("/",function(req, res, next) {
 
 passport.use(new TwitterStrategy(twitterConfig,
   function(token, tokenSecret, profile, done){
-    User.findOne({ twitter_profile_id: profile.id }, function (err, user) {
+    User.findOne({ twitter_profile_id: profile.id }, function(err, user) {
       if (err) {
         return done(err);
       }else if (!user) {
@@ -76,7 +76,7 @@ passport.use(new TwitterStrategy(twitterConfig,
           avatar_path: profile.photos[0].value
         };
         var newUser = new User(_user);
-        newUser.save((err)=>{
+        newUser.save(function(err) {
           if(err) throw err
           return done(null, newUser);
         });
@@ -91,7 +91,7 @@ app.get('/oauth/twitter', passport.authenticate('twitter'));
 app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   function(req, res, next) {
 
-    User.findOne({_id: req.session.passport.user}, function(err, user){
+    User.findOne({_id: req.session.passport.user}, function(err, user) {
       if(err||!req.session) return res.redirect('/oauth/twitter')
       req.session.user = {
         username: user.username,
@@ -119,7 +119,7 @@ app.post("/update", fileUpload(), function(req, res, next) {
   if(req.files && req.files.image){
     var img = req.files.image
 
-    img.mv('./image/' + img.name, function(err){
+    img.mv('./image/' + img.name, function(err) {
       if(err) throw err
 
       var newMessage = new Message({
@@ -139,7 +139,7 @@ app.post("/update", fileUpload(), function(req, res, next) {
         avatar_path: req.session.user.avatar_path,
         message: req.body.message,
       })
-      newMessage.save((err)=>{
+      newMessage.save(function(err) {
         if(err) throw err
         return res.redirect("/")
       })
@@ -163,5 +163,5 @@ app.use(function(err, req, res, next) {
   });
 });
 
-const server = http.createServer(app);
+var server = http.createServer(app);
 server.listen('3000');

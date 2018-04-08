@@ -84,7 +84,7 @@ app.get("/logout", function(req, res, next) {
 
 passport.use(new TwitterStrategy(twitterConfig,
   function(token, tokenSecret, profile, done){
-    User.findOne({ twitter_profile_id: profile.id }, function (err, user) {
+    User.findOne({ twitter_profile_id: profile.id }, function(err, user) {
       if (err) {
         return done(err);
       }else if (!user) {
@@ -94,7 +94,7 @@ passport.use(new TwitterStrategy(twitterConfig,
           avatar_path: profile.photos[0].value
         };
         var newUser = new User(_user);
-        newUser.save((err)=>{
+        newUser.save(function(err) {
           if(err) throw err
           return done(null, newUser);
         });
@@ -109,7 +109,7 @@ app.get('/oauth/twitter', passport.authenticate('twitter'));
 app.get('/oauth/twitter/callback', passport.authenticate('twitter'),
   function(req, res, next) {
 
-    User.findOne({_id: req.session.passport.user}, function(err, user){
+    User.findOne({_id: req.session.passport.user}, function(err, user) {
       if(err||!req.session) return res.redirect('/oauth/twitter')
       req.session.user = {
         username: user.username,
@@ -149,7 +149,7 @@ app.post("/update", checkAuth, fileUpload(), csrfProtection, function(req, res, 
         message: req.body.message,
         image_path: '/image/' + img.name,
       })
-      newMessage.save((err)=>{
+      newMessage.save(function(err) {
         if(err) throw err
         return res.redirect("/")
       })
@@ -160,7 +160,7 @@ app.post("/update", checkAuth, fileUpload(), csrfProtection, function(req, res, 
         avatar_path: req.session.user.avatar_path,
         message: req.body.message,
       })
-      newMessage.save((err)=>{
+      newMessage.save(function(err) {
         if(err) throw err
         return res.redirect("/")
       })
@@ -188,5 +188,5 @@ app.use(function(err, req, res, next) {
   });
 });
 
-const server = http.createServer(app);
+var server = http.createServer(app);
 server.listen(process.env.PORT || '3000');
